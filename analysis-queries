@@ -12,7 +12,7 @@ SELECT type, COUNT(type)
 FROM hbo
 GROUP BY type;
 
--- Results = 1746 for tv and 
+-- Results = 1746 for tv and 3670 for movies
 
 
 -- Since titles might fall into multiple genres, you can list and count the titles by each unique genre.
