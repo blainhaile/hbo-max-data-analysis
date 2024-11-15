@@ -1,0 +1,157 @@
+-- Unique Movie Title Total
+
+SELECT COUNT(title)
+FROM hbo;
+
+-- Results = 5416
+
+
+-- Find the number of movies vs. TV shows. This gives you a sense of the dataset’s composition. 
+
+SELECT type, COUNT(type)
+FROM hbo
+GROUP BY type;
+
+-- Results = 1746 for tv and 
+
+
+-- Since titles might fall into multiple genres, you can list and count the titles by each unique genre.
+
+SELECT DISTINCT(genres), COUNT(title)
+FROM hbo
+WHERE genres != '{}'
+GROUP BY title
+ORDER BY genres
+
+-- There are 474 unique genre arrays with one movie in each
+
+
+-- This groups each unique genre array with the amount of titles in it:
+
+SELECT DISTINCT(genres), COUNT(title)
+FROM hbo
+WHERE genres != '{}'
+GROUP BY genres
+ORDER BY genres
+
+
+-- Determines the amount of movies in each genre array:
+
+SELECT DISTINCT(genres), COUNT(title)
+FROM hbo
+WHERE genres != '{}'
+GROUP BY genres
+ORDER BY COUNT(title) DESC
+
+-- Documntary is the highest = 425 movies
+
+
+SELECT DISTINCT(genres), COUNT(title)
+FROM hbo
+WHERE genres != '{}'
+GROUP BY genres
+HAVING COUNT(title) = 1;
+
+-- 177 genres have 1 movies
+
+
+
+-- Identify the top 10 and bottom 10 titles by average rating to see the most and least popular content.
+
+SELECT title, averagerating
+FROM hbo
+WHERE averagerating IS NOT NULL
+ORDER BY averagerating DESC;
+
+
+-- Calculate the average rating separately for movies and TV shows to see if there’s a noticeable difference.
+
+SELECT type, ROUND(AVG(averagerating),2) AS Average_Rating
+FROM hbo
+GROUP by type;
+
+
+-- Determine the average rating by genre to see which genres tend to be the most highly rated. You can further break this down by type (movie vs. TV).
+
+
+SELECT DISTINCT(genres), COUNT(genres), ROUND(AVG(averagerating),2) AS Average_Rating 
+FROM hbo
+WHERE averagerating IS NOT NULL
+GROUP by DISTINCT(genres)
+ORDER BY average_rating DESC
+LIMIT 1;
+
+
+-- Genre with the highest rating:
+
+genres = {Animation,Crime,Drama}
+count	= 1
+average_rating = 8.90
+
+
+-- Segment titles into “high-rated” and “low-rated” categories based on a threshold (e.g., above 8.0 for high-rated, below 5.0 for low-rated) to see patterns or characteristics in each group.
+
+SELECT title, averagerating
+FROM hbo
+WHERE averagerating > 8.0
+
+
+-- 428 Movies with a average rating above 8.0
+
+
+SELECT title, averagerating
+FROM hbo
+WHERE averagerating < 5.0
+
+
+-- 295 movies with a average rating below 5.0
+
+
+
+-- Identify the top 10 titles with the highest number of votes to understand which content has the broadest viewer engagement.
+
+
+SELECT title, votes
+FROM hbo
+WHERE votes IS NOT NULL
+ORDER BY votes DESC
+LIMIT 10;
+
+
+-- Calculate the total and average votes per genre and type to see which genres or formats receive the most engagement.
+
+SELECT DISTINCT(genres), COUNT(title) AS num_of_title, SUM(votes) AS total_votes, ROUND(AVG(votes),0) AS average_votes
+FROM hbo
+WHERE votes IS NOT NULL
+GROUP BY genres
+ORDER BY average_votes DESC
+LIMIT 3;
+
+SELECT DISTINCT(type), COUNT(title) AS num_of_title, SUM(votes) AS total_votes, ROUND(AVG(votes),0) AS average_votes
+FROM hbo
+WHERE votes IS NOT NULL
+GROUP BY type
+ORDER BY average_votes DESC
+LIMIT 3;
+
+
+-- Check if there is any correlation between the number of votes and average ratings. For example, do titles with higher votes also tend to have higher ratings?
+
+SELECT genres, COUNT(title) AS title, CORR(votes, averagerating) AS correlation
+FROM hbo
+GROUP BY genres
+HAVING CORR(votes, averagerating) <> 0
+ORDER BY CORR(votes, averagerating) DESC
+LIMIT 10;
+
+
+SELECT genres, COUNT(title) AS title, CORR(votes, averagerating) AS correlation
+FROM hbo
+GROUP BY genres
+HAVING CORR(votes, averagerating) BETWEEN -0.01 AND 0.01
+ORDER BY CORR(votes, averagerating) DESC;
+
+- If the correlation coefficient is close to 1, it indicates a strong positive relationship (i.e., higher votes are associated with higher ratings).
+- If the correlation coefficient is close to -1, it indicates a strong negative relationship (i.e., higher votes are associated with lower ratings).
+- If the correlation coefficient is close to 0, there is no significant linear relationship between the two variables.
+
