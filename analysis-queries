@@ -155,3 +155,172 @@ ORDER BY CORR(votes, averagerating) DESC;
 - If the correlation coefficient is close to -1, it indicates a strong negative relationship (i.e., higher votes are associated with lower ratings).
 - If the correlation coefficient is close to 0, there is no significant linear relationship between the two variables.
 
+
+
+-- Count titles by release year to see how content production has varied over time.
+
+SELECT DISTINCT(releaseyear), COUNT(title) AS title_count
+FROM hbo
+WHERE releaseyear IS NOT NULL 
+GROUP BY releaseyear
+ORDER BY COUNT(title) DESC
+
+SELECT DISTINCT(releaseyear), COUNT(title) AS title_count
+FROM hbo
+WHERE releaseyear IS NOT NULL 
+GROUP BY releaseyear
+HAVING COUNT(title) >= 100
+ORDER BY COUNT(title) DESC
+
+
+-- 15 different years had 1 title
+-- 17 distinct years had 100 or more titles
+-- Highest was 694 titles for 2022
+
+
+-- Analyze how average ratings have changed over time to detect patterns in user preferences or content quality.
+
+SELECT releaseyear, ROUND(AVG(averagerating),2) AS Avg_Rating
+FROM hbo
+WHERE releaseyear IS NOT NULL AND averagerating IS NOT NULL
+GROUP BY releaseyear
+ORDER BY AVG(averagerating) DESC
+LIMIT 1;
+
+-- HIGHEST average rating = 1942 8.5
+-- LOWEST average rating = 1978 6.10
+
+
+-- Look at the total votes by release year to see if older or newer titles tend to be more popular.
+
+SELECT releaseyear, SUM(votes) AS Total_Votes
+FROM hbo
+WHERE releaseyear IS NOT NULL AND votes IS NOT NULL
+GROUP BY releaseyear
+ORDER BY SUM(votes) DESC
+
+-- LOWEST total votes = 1909 at 624
+-- HIGHEST total votes = 2013 at 20,920,314
+
+
+
+-- Track the number of titles in each genre by release year to see if certain genres became more popular over time.
+
+SELECT releaseyear, genre, COUNT(title) AS title_count
+FROM(
+	SELECT releaseyear, title,
+	unnest(genres) AS genre
+	FROM hbo) AS genres_split
+WHERE releaseyear IS NOT NULL
+GROUP BY releaseyear, genre
+ORDER BY releaseyear, title_count ASC;
+
+
+-- Number of years short genres where released:
+
+SELECT releaseyear, genre, COUNT(title) AS title_count
+FROM(
+	SELECT releaseyear, title,
+	unnest(genres) AS genre
+	FROM hbo) AS genres_split
+WHERE releaseyear IS NOT NULL AND genre LIKE '%Short%'
+GROUP BY releaseyear, genre
+ORDER BY releaseyear, title_count ASC
+
+
+-- Observe if certain genres’ average ratings change over time, perhaps due to shifts in viewer preferences or content quality.
+
+SELECT DISTINCT(genres), releaseyear, averagerating
+FROM hbo
+WHERE averagerating IS NOT NULL AND genres != '{}'
+ORDER BY genres, releaseyear
+
+
+-- Count how many titles fall under multiple genres and which genre combinations are most common (e.g., Action/Adventure, Drama/Romance).
+
+SELECT genre_combination, COUNT(*) AS total_titles
+FROM(
+SELECT title, ARRAY(
+	SELECT UNNEST(genres)  
+	ORDER BY UNNEST(genres)
+) AS genre_combination
+FROM hbo
+WHERE genres IS NOT NULL AND array_length(genres,1) > 1
+) AS genre_combination
+GROUP BY genre_combination
+ORDER BY total_titles DESC
+LIMIT 1;
+
+-- There are 163 genre combinations with 1 total titles
+
+
+-- Analyze the most common genres within movies versus TV shows. Are certain genres more prevalent in one type?
+
+SELECT DISTINCT(genres), COUNT(title) AS total_titles
+FROM(
+	SELECT genres, title, type,
+	UNNEST(genres) AS genre_combinations
+	FROM hbo) AS genres_split
+WHERE genres != '{}' AND type = 'movie'
+GROUP BY DISTINCT(genres), title
+ORDER BY COUNT(title) DESC
+LIMIT 1;
+
+
+SELECT DISTINCT(genres), COUNT(title) AS total_titles
+FROM(
+	SELECT genres, title, type,
+	UNNEST(genres) AS genre_combinations
+	FROM hbo) AS genres_split
+WHERE genres != '{}' AND type = 'tv'
+GROUP BY DISTINCT(genres), title
+ORDER BY COUNT(title) DESC
+LIMIT 1;
+
+
+-- Check if certain genres consistently have higher ratings in either movies or TV shows (e.g., Drama movies vs. Drama TV shows).
+
+-- List with the combo of genres:
+
+SELECT genres, type, ROUND(AVG(averagerating), 2)
+FROM hbo
+WHERE genres != '{}'
+GROUP BY genres, type
+ORDER BY genres, type
+
+-- List with the genres separated:
+
+SELECT 
+    genre, 
+    type, 
+    ROUND(AVG(averagerating),2) AS avg_rating
+FROM (
+    SELECT 
+        unnest(genres) AS genre, 
+        type, 
+        averagerating
+    FROM hbo
+    WHERE averagerating IS NOT NULL
+) AS genre_ratings
+GROUP BY genre, type
+ORDER BY genre, type;
+
+
+-- Look for titles with low ratings but high vote counts (possible cult classics) and titles with high ratings but low votes (potential hidden gems).
+
+SELECT title, averagerating, votes
+FROM hbo
+WHERE averagerating IS NOT NULL AND averagerating < 2
+ORDER BY averagerating ASC;
+
+
+
+
+
+
+
+
+
+
+
+
