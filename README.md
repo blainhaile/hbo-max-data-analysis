@@ -64,7 +64,7 @@ The dataset includes:
 - **Top Rated Title**: _Treme_ (9.4 average rating).
 - **Most Voted Title**: _The Shawshank Redemption_ (2,961,822 votes).
 - **Highest Average Rating Year**: 1942 (8.5 average).
-- **Most Common Genre Combination**: _Documentary_ (425 titles).
+- **Most Common Genre Combination**: _Documentary_ (396 titles).
 
 ### Visualizations
 ![Rating Trends Over Time](visuals/ratings_trends.png)
