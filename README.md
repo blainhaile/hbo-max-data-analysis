@@ -1,4 +1,4 @@
-# HBO Data Analysis Project
+# HBO Max Data Analysis Project
 
 This repository contains an analysis of the HBO dataset, exploring trends, ratings, and other insights.
 
