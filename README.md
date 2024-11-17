@@ -67,7 +67,8 @@ The dataset includes:
 - **Most Common Genre Combination**: _Documentary_ (425 titles).
 
 ### Visualizations
-HBO Max Dashboard_v2024.2.twb
+
+Check out the Tableau dashboard [here](https://public.tableau.com/views/HBOMaxDashboard_v2024_2/HBODashboard?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link).
 
 ---
 
