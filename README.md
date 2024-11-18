@@ -68,7 +68,7 @@ The dataset includes:
 
 ### Visualizations
 
-Check out the Tableau dashboard [here](https://public.tableau.com/views/HBOMaxDashboard_v2024_2/HBODashboard?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link).
+Check out the Tableau dashboard [here](https://public.tableau.com/views/HBOMaxDashboard/HBODashboard?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link).
 
 ---
 
